@@ -1,0 +1,18 @@
+name: Test cache-dependency-path input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          typst-version: latest
+          cache-dependency-path: ${{ github.workspace }}/actions/hardened/typst-community--setup-typst/v5.1.0/tests/fixtures/main.typ
+      - name: Assert typst is installed with cache-dependency-path
+        run: |
+          which typst
+          typst --version
+          echo "PASS: typst installed with cache-dependency-path set"
