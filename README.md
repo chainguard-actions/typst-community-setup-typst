@@ -1,6 +1,6 @@
 # typst-community/setup-typst
 
-📑 Install Typst and add it to the PATH with package management
+📑 Install Typst and add it to the PATH with package management
 
 Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at [https://github.com/typst-community/setup-typst](https://github.com/typst-community/setup-typst).
 
@@ -8,6 +8,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 
 | Version | Tag | Upstream commit |
 |---------|-----|-----------------|
+| v5.0.0 | [`v5.0.0`](https://github.com/chainguard-actions/typst-community-setup-typst/tree/v5.0.0) | [`f3792ba`](https://github.com/typst-community/setup-typst/commit/f3792ba4fd5a663366a44b5a6559de6ecc91a520) |
 | v5.1.0 | [`v5.1.0`](https://github.com/chainguard-actions/typst-community-setup-typst/tree/v5.1.0) | [`63ac138`](https://github.com/typst-community/setup-typst/commit/63ac138db421d586de61f7f5ac3bcef6a2e6c78c) |
 
 ## Privacy
