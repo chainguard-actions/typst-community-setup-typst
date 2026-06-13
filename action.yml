@@ -1,0 +1,34 @@
+name: Setup Typst
+description: "\U0001F4D1 Install Typst and add it to the PATH with package management"
+branding:
+  icon: terminal
+  color: white
+inputs:
+  typst-version:
+    description: "Version range or exact version of Typst to use, using SemVer's version range syntax. Uses the latest version if unset."
+    default: latest
+  allow-prereleases:
+    description: "When 'true', a version range including 'latest' passed to 'typst-version' input will match prerelease versions."
+    default: false
+  executable-name:
+    description: "Used to specify the executable file name of Typst."
+    default: typst
+  typst-versions-map:
+    description: "Used to specify a JSON map of executable names to Typst version configurations, for installing multiple Typst versions at once. Each value is an object with a required 'version' field and an optional 'allowPrerelease' field."
+    required: false
+  cache-dependency-path:
+    description: "Used to specify the path to a Typst file containing lines of 'import' keyword."
+    required: false
+  zip-packages:
+    description: "Used to specify the path to a JSON file containing names and ZIP archive URLs of packages."
+    required: false
+  cache-local-packages:
+    description: "When 'true', local packages set by 'zip-packages' will be cached independently of '@preview' packages."
+    default: false
+  token:
+    description: "The token used to authenticate when fetching Typst distributions from typst/typst. When running this action on github.com, the default value is sufficient. When running on GHES, you can pass a personal access token for github.com if you are experiencing rate limiting."
+    default: ${{ github.server_url == 'https://github.com' && github.token || '' }}
+runs:
+  using: node24
+  main: dist/main/index.js
+  pre: chainguard-phonehome.js
