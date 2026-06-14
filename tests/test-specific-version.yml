@@ -1,0 +1,39 @@
+name: Test specific version installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: setup
+        uses: .
+        with:
+          typst-version: "0.11.0"
+      - name: Assert typst-version output matches requested version
+        env:
+          TYPST_VERSION: ${{ steps.setup.outputs.typst-version }}
+        run: |
+          echo "typst-version: $TYPST_VERSION"
+          if [ -z "$TYPST_VERSION" ]; then
+            echo "FAIL: typst-version output is empty"
+            exit 1
+          fi
+          if [ "$TYPST_VERSION" != "0.11.0" ]; then
+            echo "FAIL: expected typst-version=0.11.0, got $TYPST_VERSION"
+            exit 1
+          fi
+          echo "PASS: typst-version=$TYPST_VERSION"
+      - name: Assert typst binary is available and correct version
+        run: |
+          if ! command -v typst &>/dev/null; then
+            echo "FAIL: typst binary not found in PATH"
+            exit 1
+          fi
+          INSTALLED=$(typst --version | head -1)
+          echo "Installed: $INSTALLED"
+          if ! echo "$INSTALLED" | grep -q "0.11.0"; then
+            echo "FAIL: expected version 0.11.0 in output: $INSTALLED"
+            exit 1
+          fi
+          echo "PASS"
