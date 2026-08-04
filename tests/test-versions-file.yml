@@ -1,0 +1,37 @@
+name: Test versions file input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create typst versions file
+        run: |
+          cat > /tmp/typst-versions.yaml << 'EOF'
+          typst-file-test:
+            version: "0.11.0"
+          EOF
+      - id: action
+        uses: .
+        with:
+          typst-versions-file: /tmp/typst-versions.yaml
+          token: ${{ github.token }}
+      - name: Assert typst-file-test is on PATH
+        run: |
+          echo "Checking typst-file-test is available..."
+          if ! command -v typst-file-test >/dev/null 2>&1; then
+            echo "FAIL: typst-file-test not found on PATH"
+            exit 1
+          fi
+          echo "PASS: typst-file-test found at $(command -v typst-file-test)"
+      - name: Assert typst-file-test version is correct
+        run: |
+          VERSION=$(typst-file-test --version 2>&1)
+          echo "typst-file-test version output: $VERSION"
+          if echo "$VERSION" | grep -q "0.11.0"; then
+            echo "PASS: typst-file-test is version 0.11.0"
+          else
+            echo "FAIL: expected 0.11.0 but got: $VERSION"
+            exit 1
+          fi

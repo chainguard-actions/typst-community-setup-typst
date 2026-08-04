@@ -1,0 +1,28 @@
+name: Test multiple versions via XML input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          typst-versions-xml: |
+            <?xml version="1.0" encoding="UTF-8"?>
+            <root>
+              <typst>
+                <version>latest</version>
+              </typst>
+            </root>
+      - name: Assert typst is installed
+        run: |
+          echo "Checking typst is available..."
+          if ! command -v typst &>/dev/null; then
+            echo "FAIL: typst not found in PATH"
+            exit 1
+          fi
+          VERSION=$(typst --version)
+          echo "typst version: $VERSION"
+          echo "PASS"

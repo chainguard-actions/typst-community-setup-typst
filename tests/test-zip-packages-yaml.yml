@@ -1,0 +1,45 @@
+name: Test zip packages via YAML input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          typst-version: latest
+          token: ${{ github.token }}
+          zip-packages-yaml: |
+            local:
+              glossarium: "https://github.com/typst-community/glossarium/archive/refs/tags/v0.5.7.zip"
+            preview: {}
+      - name: Assert typst is on PATH
+        run: |
+          echo "Checking typst is available..."
+          if ! command -v typst >/dev/null 2>&1; then
+            echo "FAIL: typst not found on PATH"
+            exit 1
+          fi
+          echo "PASS: typst found at $(command -v typst)"
+      - name: Assert typst version output
+        run: |
+          VERSION=$(typst --version 2>&1)
+          echo "typst version output: $VERSION"
+          if [ -z "$VERSION" ]; then
+            echo "FAIL: typst --version returned empty output"
+            exit 1
+          fi
+          echo "PASS: typst is installed and working"
+      - name: Assert local package was installed
+        run: |
+          echo "Checking local package directory..."
+          LOCAL_PKG_DIR="$HOME/.cache/typst/packages/local/glossarium"
+          if [ -d "$LOCAL_PKG_DIR" ]; then
+            echo "PASS: local package directory exists at $LOCAL_PKG_DIR"
+            ls -la "$LOCAL_PKG_DIR"
+          else
+            echo "FAIL: local package directory not found at $LOCAL_PKG_DIR"
+            exit 1
+          fi
