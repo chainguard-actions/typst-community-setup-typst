@@ -1,4 +1,4 @@
-name: Test basic usage - install latest typst
+name: Test basic usage - latest Typst
 on:
   workflow_dispatch:
 jobs:
@@ -10,21 +10,30 @@ jobs:
         uses: .
         with:
           typst-version: latest
+          token: ${{ github.token }}
       - name: Assert typst-version output is set
         env:
-          TYPST_VERSION: ${{ steps.setup.outputs.typst-version }}
+          ACTUAL: ${{ steps.setup.outputs.typst-version }}
         run: |
-          echo "typst-version: $TYPST_VERSION"
-          if [ -z "$TYPST_VERSION" ]; then
+          echo "actual: $ACTUAL"
+          if [ -z "$ACTUAL" ]; then
             echo "FAIL: typst-version output is empty"
             exit 1
           fi
-          echo "PASS: typst-version=$TYPST_VERSION"
-      - name: Assert typst binary is available
+          echo "PASS: typst-version=$ACTUAL"
+      - name: Assert typst is on PATH
         run: |
-          if ! command -v typst &>/dev/null; then
-            echo "FAIL: typst binary not found in PATH"
+          if ! command -v typst >/dev/null 2>&1; then
+            echo "FAIL: typst not found on PATH"
             exit 1
           fi
           echo "PASS: typst found at $(command -v typst)"
-          typst --version
+      - name: Assert typst runs
+        run: |
+          VERSION=$(typst --version)
+          echo "typst version: $VERSION"
+          if [ -z "$VERSION" ]; then
+            echo "FAIL: typst --version returned empty"
+            exit 1
+          fi
+          echo "PASS"

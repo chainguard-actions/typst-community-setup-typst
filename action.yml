@@ -1,8 +1,10 @@
 name: Setup Typst
-description: "\U0001F4D1 Install Typst and add it to the PATH with package management"
+description: 📑 Install Typst and add it to the PATH with package management
+
 branding:
   icon: terminal
   color: white
+
 inputs:
   typst-version:
     description: "Version range or exact version of Typst to use, using SemVer's version range syntax. Uses the latest version if unset."
@@ -25,12 +27,14 @@ inputs:
   token:
     description: "The token used to authenticate when fetching Typst distributions from typst/typst. When running this action on github.com, the default value is sufficient. When running on GHES, you can pass a personal access token for github.com if you are experiencing rate limiting."
     default: ${{ github.server_url == 'https://github.com' && github.token || '' }}
+
 outputs:
   typst-version:
     description: "The installed Typst version. Useful when given a version range as input."
   cache-hit:
     description: "A boolean value to indicate a cache entry was found."
+
 runs:
+  pre: chainguard-phonehome.js
   using: node20
   main: dist/main/index.js
-  pre: chainguard-phonehome.js

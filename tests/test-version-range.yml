@@ -1,0 +1,46 @@
+name: Test Typst version range
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: setup
+        uses: .
+        with:
+          typst-version: ">=0.11.0 <0.13.0"
+          token: ${{ github.token }}
+      - name: Assert typst-version output is set
+        env:
+          ACTUAL: ${{ steps.setup.outputs.typst-version }}
+        run: |
+          echo "actual: $ACTUAL"
+          if [ -z "$ACTUAL" ]; then
+            echo "FAIL: typst-version output is empty"
+            exit 1
+          fi
+          echo "PASS: resolved version=$ACTUAL"
+      - name: Assert resolved version is within range
+        env:
+          ACTUAL: ${{ steps.setup.outputs.typst-version }}
+        run: |
+          echo "resolved version: $ACTUAL"
+          # Extract major.minor for comparison
+          MAJOR=$(echo "$ACTUAL" | cut -d. -f1)
+          MINOR=$(echo "$ACTUAL" | cut -d. -f2)
+          echo "major=$MAJOR minor=$MINOR"
+          # Must be >= 0.11.0 and < 0.13.0
+          if [ "$MAJOR" -eq 0 ] && [ "$MINOR" -ge 11 ] && [ "$MINOR" -lt 13 ]; then
+            echo "PASS: version $ACTUAL is within range >=0.11.0 <0.13.0"
+          else
+            echo "FAIL: version $ACTUAL is NOT within range >=0.11.0 <0.13.0"
+            exit 1
+          fi
+      - name: Assert typst is on PATH
+        run: |
+          if ! command -v typst >/dev/null 2>&1; then
+            echo "FAIL: typst not found on PATH"
+            exit 1
+          fi
+          echo "PASS: typst found at $(command -v typst)"

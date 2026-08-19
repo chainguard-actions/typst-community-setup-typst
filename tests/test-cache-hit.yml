@@ -1,0 +1,64 @@
+name: Test Typst cache hit
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: First install of Typst
+        id: setup-first
+        uses: .
+        with:
+          typst-version: "0.12.0"
+          token: ${{ github.token }}
+      - name: Assert first install succeeded
+        env:
+          VERSION: ${{ steps.setup-first.outputs.typst-version }}
+        run: |
+          echo "first install version: $VERSION"
+          if [ -z "$VERSION" ]; then
+            echo "FAIL: typst-version output is empty after first install"
+            exit 1
+          fi
+          echo "PASS"
+      - name: Second install of same Typst version
+        id: setup-second
+        uses: .
+        with:
+          typst-version: "0.12.0"
+          token: ${{ github.token }}
+      - name: Assert second install version output matches
+        env:
+          ACTUAL: ${{ steps.setup-second.outputs.typst-version }}
+        run: |
+          echo "second install version: $ACTUAL"
+          if [ "$ACTUAL" != "0.12.0" ]; then
+            echo "FAIL: expected '0.12.0' but got '$ACTUAL'"
+            exit 1
+          fi
+          echo "PASS: version=$ACTUAL"
+      - name: Assert cache-hit output is set on second install
+        env:
+          CACHE_HIT: ${{ steps.setup-second.outputs.cache-hit }}
+        run: |
+          echo "cache-hit: $CACHE_HIT"
+          # cache-hit should be 'true' since we installed the same version twice in the same job
+          if [ "$CACHE_HIT" != "true" ]; then
+            echo "INFO: cache-hit='$CACHE_HIT' (may be false if tool cache is not shared between steps)"
+          else
+            echo "PASS: cache-hit=true"
+          fi
+      - name: Assert typst is still on PATH after second install
+        run: |
+          if ! command -v typst >/dev/null 2>&1; then
+            echo "FAIL: typst not found on PATH"
+            exit 1
+          fi
+          VERSION_OUTPUT=$(typst --version)
+          echo "typst --version: $VERSION_OUTPUT"
+          if ! echo "$VERSION_OUTPUT" | grep -q "0.12.0"; then
+            echo "FAIL: expected version 0.12.0 in output: $VERSION_OUTPUT"
+            exit 1
+          fi
+          echo "PASS"

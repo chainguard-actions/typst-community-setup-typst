@@ -1,4 +1,4 @@
-name: Test specific version installation
+name: Test specific Typst version
 on:
   workflow_dispatch:
 jobs:
@@ -9,31 +9,28 @@ jobs:
       - id: setup
         uses: .
         with:
-          typst-version: "0.11.0"
+          typst-version: "0.12.0"
+          token: ${{ github.token }}
       - name: Assert typst-version output matches requested version
         env:
-          TYPST_VERSION: ${{ steps.setup.outputs.typst-version }}
+          ACTUAL: ${{ steps.setup.outputs.typst-version }}
         run: |
-          echo "typst-version: $TYPST_VERSION"
-          if [ -z "$TYPST_VERSION" ]; then
-            echo "FAIL: typst-version output is empty"
+          echo "actual: $ACTUAL"
+          if [ "$ACTUAL" != "0.12.0" ]; then
+            echo "FAIL: expected '0.12.0' but got '$ACTUAL'"
             exit 1
           fi
-          if [ "$TYPST_VERSION" != "0.11.0" ]; then
-            echo "FAIL: expected typst-version=0.11.0, got $TYPST_VERSION"
-            exit 1
-          fi
-          echo "PASS: typst-version=$TYPST_VERSION"
-      - name: Assert typst binary is available and correct version
+          echo "PASS: typst-version=$ACTUAL"
+      - name: Assert typst is on PATH and correct version
         run: |
-          if ! command -v typst &>/dev/null; then
-            echo "FAIL: typst binary not found in PATH"
+          if ! command -v typst >/dev/null 2>&1; then
+            echo "FAIL: typst not found on PATH"
             exit 1
           fi
-          INSTALLED=$(typst --version | head -1)
-          echo "Installed: $INSTALLED"
-          if ! echo "$INSTALLED" | grep -q "0.11.0"; then
-            echo "FAIL: expected version 0.11.0 in output: $INSTALLED"
+          VERSION_OUTPUT=$(typst --version)
+          echo "typst --version: $VERSION_OUTPUT"
+          if ! echo "$VERSION_OUTPUT" | grep -q "0.12.0"; then
+            echo "FAIL: expected version 0.12.0 in output: $VERSION_OUTPUT"
             exit 1
           fi
           echo "PASS"
