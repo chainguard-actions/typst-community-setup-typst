@@ -1,0 +1,29 @@
+name: Test custom executable name
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: setup
+        uses: .
+        with:
+          typst-version: latest
+          executable-name: typst-custom
+      - name: Assert custom executable is on PATH
+        run: |
+          if ! which typst-custom; then
+            echo "FAIL: typst-custom not found on PATH"
+            exit 1
+          fi
+          echo "PASS: typst-custom found on PATH"
+      - name: Assert custom executable runs
+        run: |
+          VERSION=$(typst-custom --version)
+          echo "actual: $VERSION"
+          if [ -z "$VERSION" ]; then
+            echo "FAIL: typst-custom --version returned empty output"
+            exit 1
+          fi
+          echo "PASS: typst-custom --version succeeded: $VERSION"

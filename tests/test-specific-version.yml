@@ -1,4 +1,4 @@
-name: Test basic usage - latest Typst
+name: Test specific Typst version
 on:
   workflow_dispatch:
 jobs:
@@ -9,7 +9,7 @@ jobs:
       - id: setup
         uses: .
         with:
-          typst-version: latest
+          typst-version: "0.13.0"
       - name: Assert typst is on PATH
         run: |
           if ! which typst; then
@@ -17,12 +17,13 @@ jobs:
             exit 1
           fi
           echo "PASS: typst found on PATH"
-      - name: Assert typst runs
+      - name: Assert typst version is 0.13.0
         run: |
           VERSION=$(typst --version)
-          echo "actual: $VERSION"
-          if [ -z "$VERSION" ]; then
-            echo "FAIL: typst --version returned empty output"
+          echo "actual version output: $VERSION"
+          if echo "$VERSION" | grep -q "0.13.0"; then
+            echo "PASS: typst version is 0.13.0"
+          else
+            echo "FAIL: expected version 0.13.0 but got: $VERSION"
             exit 1
           fi
-          echo "PASS: typst --version succeeded: $VERSION"

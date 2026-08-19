@@ -6,18 +6,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - id: setup-typst
+
+      - name: Create a Typst file with import statements
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/typst-fixtures"
+          cat > "$GITHUB_WORKSPACE/typst-fixtures/main.typ" <<'EOF'
+          #import "@preview/cetz:0.1.2": *
+          = Hello World
+          EOF
+
+      - id: action
         uses: .
         with:
           typst-version: latest
-          cache-dependency-path: >-
-            ${{ github.workspace }}/actions/hardened/typst-community--setup-typst/v5.0.0/tests/fixtures/main.typ
-      - name: Assert typst is installed
+          cache-dependency-path: "${{ github.workspace }}/typst-fixtures/main.typ"
+
+      - name: Assert typst is installed and on PATH
         run: |
-          echo "Checking typst is in PATH..."
-          if ! command -v typst &>/dev/null; then
-            echo "FAIL: typst not found in PATH"
+          echo "Checking typst is available..."
+          if ! command -v typst >/dev/null 2>&1; then
+            echo "FAIL: typst not found on PATH"
             exit 1
           fi
-          echo "PASS: typst found at $(which typst)"
+          echo "PASS: typst is installed"
           typst --version

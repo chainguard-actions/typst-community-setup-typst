@@ -1,0 +1,50 @@
+name: Test multiple versions via typst-versions-map
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: setup-typst
+        uses: .
+        with:
+          typst-versions-map: |
+            {
+              "typst-0-11": { "version": "0.11.0" },
+              "typst-0-12": { "version": "0.12.0" }
+            }
+      - name: Assert typst-0-11 is available in PATH
+        run: |
+          echo "Checking typst-0-11 is in PATH..."
+          if ! command -v typst-0-11 &>/dev/null; then
+            echo "FAIL: typst-0-11 not found in PATH"
+            exit 1
+          fi
+          echo "PASS: typst-0-11 found at $(command -v typst-0-11)"
+      - name: Assert typst-0-11 version
+        run: |
+          VERSION=$(typst-0-11 --version)
+          echo "actual: $VERSION"
+          if [[ "$VERSION" != *"0.11.0"* ]]; then
+            echo "FAIL: expected version to contain '0.11.0', got '$VERSION'"
+            exit 1
+          fi
+          echo "PASS: typst-0-11 version is $VERSION"
+      - name: Assert typst-0-12 is available in PATH
+        run: |
+          echo "Checking typst-0-12 is in PATH..."
+          if ! command -v typst-0-12 &>/dev/null; then
+            echo "FAIL: typst-0-12 not found in PATH"
+            exit 1
+          fi
+          echo "PASS: typst-0-12 found at $(command -v typst-0-12)"
+      - name: Assert typst-0-12 version
+        run: |
+          VERSION=$(typst-0-12 --version)
+          echo "actual: $VERSION"
+          if [[ "$VERSION" != *"0.12.0"* ]]; then
+            echo "FAIL: expected version to contain '0.12.0', got '$VERSION'"
+            exit 1
+          fi
+          echo "PASS: typst-0-12 version is $VERSION"

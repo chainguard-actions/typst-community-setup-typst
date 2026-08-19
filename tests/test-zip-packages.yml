@@ -6,18 +6,49 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - id: setup-typst
+      - name: Create zip-packages JSON file
+        run: |
+          cat > /tmp/zip-packages.json << 'EOF'
+          {
+            "local": {
+              "glossarium": "https://github.com/typst-community/glossarium/archive/refs/tags/v0.5.7.zip"
+            },
+            "preview": {}
+          }
+          EOF
+          echo "Created zip-packages.json:"
+          cat /tmp/zip-packages.json
+      - id: setup
         uses: .
         with:
           typst-version: latest
-          zip-packages: >-
-            ${{ github.workspace }}/actions/hardened/typst-community--setup-typst/v5.0.0/tests/fixtures/packages.json
-      - name: Assert typst is installed
+          zip-packages: /tmp/zip-packages.json
+      - name: Assert typst is on PATH
         run: |
-          echo "Checking typst is in PATH..."
-          if ! command -v typst &>/dev/null; then
-            echo "FAIL: typst not found in PATH"
+          if ! which typst; then
+            echo "FAIL: typst not found on PATH"
             exit 1
           fi
-          echo "PASS: typst found at $(which typst)"
-          typst --version
+          echo "PASS: typst found on PATH"
+      - name: Assert typst runs
+        run: |
+          VERSION=$(typst --version)
+          echo "actual: $VERSION"
+          if [ -z "$VERSION" ]; then
+            echo "FAIL: typst --version returned empty output"
+            exit 1
+          fi
+          echo "PASS: typst --version succeeded: $VERSION"
+      - name: Assert local package directory exists
+        run: |
+          PACKAGES_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/typst/packages/local"
+          echo "Checking for packages in: $PACKAGES_DIR"
+          if [ -d "$PACKAGES_DIR" ]; then
+            echo "PASS: local packages directory exists"
+            ls -la "$PACKAGES_DIR/" || true
+          else
+            echo "FAIL: local packages directory not found at $PACKAGES_DIR"
+            echo "Contents of $HOME/.cache/typst (if exists):"
+            ls -la "$HOME/.cache/typst" 2>/dev/null || echo "(directory does not exist)"
+            exit 1
+          fi
