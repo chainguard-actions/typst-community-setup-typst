@@ -1,4 +1,4 @@
-name: Test basic usage - install latest typst
+name: Test specific version installation
 on:
   workflow_dispatch:
 jobs:
@@ -9,7 +9,7 @@ jobs:
       - id: setup
         uses: .
         with:
-          typst-version: latest
+          typst-version: "0.11.0"
           token: ${{ github.token }}
       - name: Assert typst is on PATH
         run: |
@@ -19,12 +19,13 @@ jobs:
             exit 1
           fi
           echo "PASS: typst found at $(command -v typst)"
-      - name: Assert typst version output
+      - name: Assert typst version matches requested
         run: |
           VERSION=$(typst --version)
-          echo "typst version: $VERSION"
-          if [ -z "$VERSION" ]; then
-            echo "FAIL: typst --version returned empty string"
+          echo "typst version output: $VERSION"
+          if echo "$VERSION" | grep -q "0.11.0"; then
+            echo "PASS: typst version is 0.11.0"
+          else
+            echo "FAIL: expected version 0.11.0 but got: $VERSION"
             exit 1
           fi
-          echo "PASS: typst version is $VERSION"

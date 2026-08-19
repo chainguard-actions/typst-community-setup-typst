@@ -1,4 +1,4 @@
-name: Test basic usage - install latest typst
+name: Test allow-prereleases flag
 on:
   workflow_dispatch:
 jobs:
@@ -10,6 +10,7 @@ jobs:
         uses: .
         with:
           typst-version: latest
+          allow-prereleases: "true"
           token: ${{ github.token }}
       - name: Assert typst is on PATH
         run: |
@@ -27,4 +28,4 @@ jobs:
             echo "FAIL: typst --version returned empty string"
             exit 1
           fi
-          echo "PASS: typst version is $VERSION"
+          echo "PASS: typst is installed and reports version: $VERSION"

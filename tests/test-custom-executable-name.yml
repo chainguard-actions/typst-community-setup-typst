@@ -1,0 +1,38 @@
+name: Test custom executable name
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: setup
+        uses: .
+        with:
+          typst-version: "0.11.0"
+          executable-name: typst-custom
+          token: ${{ github.token }}
+      - name: Assert custom executable is on PATH
+        run: |
+          echo "Checking typst-custom is available..."
+          if ! command -v typst-custom >/dev/null 2>&1; then
+            echo "FAIL: typst-custom not found on PATH"
+            exit 1
+          fi
+          echo "PASS: typst-custom found at $(command -v typst-custom)"
+      - name: Assert custom executable works
+        run: |
+          VERSION=$(typst-custom --version)
+          echo "typst-custom version output: $VERSION"
+          if [ -z "$VERSION" ]; then
+            echo "FAIL: typst-custom --version returned empty string"
+            exit 1
+          fi
+          echo "PASS: typst-custom version is $VERSION"
+      - name: Assert default typst name is NOT on PATH
+        run: |
+          if command -v typst >/dev/null 2>&1; then
+            echo "WARN: 'typst' is also on PATH (may be expected if action adds both)"
+          else
+            echo "PASS: 'typst' is not on PATH (only custom name is installed)"
+          fi

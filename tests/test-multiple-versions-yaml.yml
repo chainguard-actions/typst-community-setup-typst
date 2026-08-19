@@ -1,0 +1,53 @@
+name: Test multiple versions via YAML input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: setup
+        uses: .
+        with:
+          typst-versions-yaml: |
+            typst-old:
+              version: "0.10.0"
+            typst-new:
+              version: "0.11.0"
+          token: ${{ github.token }}
+      - name: Assert typst-old is on PATH
+        run: |
+          echo "Checking typst-old is available..."
+          if ! command -v typst-old >/dev/null 2>&1; then
+            echo "FAIL: typst-old not found on PATH"
+            exit 1
+          fi
+          echo "PASS: typst-old found at $(command -v typst-old)"
+      - name: Assert typst-old version
+        run: |
+          VERSION=$(typst-old --version)
+          echo "typst-old version output: $VERSION"
+          if echo "$VERSION" | grep -q "0.10.0"; then
+            echo "PASS: typst-old is version 0.10.0"
+          else
+            echo "FAIL: expected 0.10.0 but got: $VERSION"
+            exit 1
+          fi
+      - name: Assert typst-new is on PATH
+        run: |
+          echo "Checking typst-new is available..."
+          if ! command -v typst-new >/dev/null 2>&1; then
+            echo "FAIL: typst-new not found on PATH"
+            exit 1
+          fi
+          echo "PASS: typst-new found at $(command -v typst-new)"
+      - name: Assert typst-new version
+        run: |
+          VERSION=$(typst-new --version)
+          echo "typst-new version output: $VERSION"
+          if echo "$VERSION" | grep -q "0.11.0"; then
+            echo "PASS: typst-new is version 0.11.0"
+          else
+            echo "FAIL: expected 0.11.0 but got: $VERSION"
+            exit 1
+          fi

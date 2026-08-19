@@ -1,0 +1,53 @@
+name: Test multiple versions via JSON input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: setup
+        uses: .
+        with:
+          typst-versions-json: |
+            {
+              "typst-a": { "version": "0.10.0" },
+              "typst-b": { "version": "0.11.0" }
+            }
+          token: ${{ github.token }}
+      - name: Assert typst-a is on PATH
+        run: |
+          echo "Checking typst-a is available..."
+          if ! command -v typst-a >/dev/null 2>&1; then
+            echo "FAIL: typst-a not found on PATH"
+            exit 1
+          fi
+          echo "PASS: typst-a found at $(command -v typst-a)"
+      - name: Assert typst-a version
+        run: |
+          VERSION=$(typst-a --version)
+          echo "typst-a version output: $VERSION"
+          if echo "$VERSION" | grep -q "0.10.0"; then
+            echo "PASS: typst-a is version 0.10.0"
+          else
+            echo "FAIL: expected 0.10.0 but got: $VERSION"
+            exit 1
+          fi
+      - name: Assert typst-b is on PATH
+        run: |
+          echo "Checking typst-b is available..."
+          if ! command -v typst-b >/dev/null 2>&1; then
+            echo "FAIL: typst-b not found on PATH"
+            exit 1
+          fi
+          echo "PASS: typst-b found at $(command -v typst-b)"
+      - name: Assert typst-b version
+        run: |
+          VERSION=$(typst-b --version)
+          echo "typst-b version output: $VERSION"
+          if echo "$VERSION" | grep -q "0.11.0"; then
+            echo "PASS: typst-b is version 0.11.0"
+          else
+            echo "FAIL: expected 0.11.0 but got: $VERSION"
+            exit 1
+          fi
