@@ -1,0 +1,7 @@
+{
+  "local": {
+    "algorithmic": {
+      "0.1.0": "https://github.com/typst-community/typst-algorithmic/archive/refs/tags/v1.0.0.zip"
+    }
+  }
+}

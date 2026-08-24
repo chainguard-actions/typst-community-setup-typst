@@ -1,0 +1,52 @@
+name: Test multiple versions via YAML input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          typst-versions-yaml: |
+            typst-stable:
+              version: "0.11.0"
+            typst-latest:
+              version: latest
+          token: ${{ github.token }}
+      - name: Assert typst-stable is on PATH
+        run: |
+          echo "Checking typst-stable is available..."
+          if ! which typst-stable; then
+            echo "FAIL: typst-stable not found on PATH"
+            exit 1
+          fi
+          echo "PASS: typst-stable found on PATH"
+      - name: Assert typst-latest is on PATH
+        run: |
+          echo "Checking typst-latest is available..."
+          if ! which typst-latest; then
+            echo "FAIL: typst-latest not found on PATH"
+            exit 1
+          fi
+          echo "PASS: typst-latest found on PATH"
+      - name: Assert typst-stable version
+        run: |
+          VERSION=$(typst-stable --version)
+          echo "typst-stable version: $VERSION"
+          if echo "$VERSION" | grep -q "0.11.0"; then
+            echo "PASS: typst-stable is version 0.11.0"
+          else
+            echo "FAIL: expected typst-stable to be 0.11.0 but got: $VERSION"
+            exit 1
+          fi
+      - name: Assert typst-latest runs
+        run: |
+          VERSION=$(typst-latest --version)
+          echo "typst-latest version: $VERSION"
+          if [ -z "$VERSION" ]; then
+            echo "FAIL: typst-latest --version returned empty output"
+            exit 1
+          fi
+          echo "PASS: typst-latest version is '$VERSION'"

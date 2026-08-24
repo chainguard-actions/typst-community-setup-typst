@@ -1,0 +1,50 @@
+name: Test versions file input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          typst-versions-file: >-
+            ${{ github.workspace }}/tests/fixtures/typst-versions.yaml
+          token: ${{ github.token }}
+      - name: Assert typst-v11 is on PATH
+        run: |
+          echo "Checking typst-v11 is available..."
+          if ! which typst-v11; then
+            echo "FAIL: typst-v11 not found on PATH"
+            exit 1
+          fi
+          echo "PASS: typst-v11 found on PATH"
+      - name: Assert typst-v12 is on PATH
+        run: |
+          echo "Checking typst-v12 is available..."
+          if ! which typst-v12; then
+            echo "FAIL: typst-v12 not found on PATH"
+            exit 1
+          fi
+          echo "PASS: typst-v12 found on PATH"
+      - name: Assert typst-v11 version
+        run: |
+          VERSION=$(typst-v11 --version)
+          echo "typst-v11 version: $VERSION"
+          if echo "$VERSION" | grep -q "0.11.0"; then
+            echo "PASS: typst-v11 is version 0.11.0"
+          else
+            echo "FAIL: expected typst-v11 to be 0.11.0 but got: $VERSION"
+            exit 1
+          fi
+      - name: Assert typst-v12 version
+        run: |
+          VERSION=$(typst-v12 --version)
+          echo "typst-v12 version: $VERSION"
+          if echo "$VERSION" | grep -q "0.12.0"; then
+            echo "PASS: typst-v12 is version 0.12.0"
+          else
+            echo "FAIL: expected typst-v12 to be 0.12.0 but got: $VERSION"
+            exit 1
+          fi

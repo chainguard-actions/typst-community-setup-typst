@@ -1,0 +1,30 @@
+name: Test basic usage - install latest typst
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          typst-version: latest
+          token: ${{ github.token }}
+      - name: Assert typst is on PATH
+        run: |
+          echo "Checking typst is available..."
+          if ! which typst; then
+            echo "FAIL: typst not found on PATH"
+            exit 1
+          fi
+          echo "PASS: typst found on PATH"
+      - name: Assert typst runs and reports version
+        run: |
+          VERSION=$(typst --version)
+          echo "typst version: $VERSION"
+          if [ -z "$VERSION" ]; then
+            echo "FAIL: typst --version returned empty output"
+            exit 1
+          fi
+          echo "PASS: typst version is '$VERSION'"

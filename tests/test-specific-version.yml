@@ -1,0 +1,31 @@
+name: Test specific version installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          typst-version: "0.11.0"
+          token: ${{ github.token }}
+      - name: Assert typst is on PATH
+        run: |
+          echo "Checking typst is available..."
+          if ! which typst; then
+            echo "FAIL: typst not found on PATH"
+            exit 1
+          fi
+          echo "PASS: typst found on PATH"
+      - name: Assert correct version is installed
+        run: |
+          VERSION=$(typst --version)
+          echo "typst version output: $VERSION"
+          if echo "$VERSION" | grep -q "0.11.0"; then
+            echo "PASS: correct version 0.11.0 installed"
+          else
+            echo "FAIL: expected version 0.11.0 but got: $VERSION"
+            exit 1
+          fi

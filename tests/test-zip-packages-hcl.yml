@@ -1,0 +1,27 @@
+name: Test zip-packages-hcl input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          typst-version: latest
+          zip-packages-hcl: |
+            local = {
+              algorithmic = {
+                "0.1.0" = "https://github.com/typst-community/typst-algorithmic/archive/refs/tags/v1.0.0.zip"
+              }
+            }
+      - name: Assert typst is installed
+        run: |
+          echo "Checking typst is available"
+          if ! command -v typst >/dev/null 2>&1; then
+            echo "FAIL: typst not found in PATH"
+            exit 1
+          fi
+          echo "PASS: typst is installed"
+          typst --version

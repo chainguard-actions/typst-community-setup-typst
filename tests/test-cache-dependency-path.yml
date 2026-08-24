@@ -1,0 +1,27 @@
+name: Test cache-dependency-path input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create a dummy Typst file with imports
+        run: |
+          cat > /tmp/main.typ << 'EOF'
+          #import "@preview/cetz:0.2.2"
+          EOF
+      - id: action
+        uses: .
+        with:
+          typst-version: latest
+          cache-dependency-path: /tmp/main.typ
+      - name: Assert typst is installed
+        run: |
+          echo "Checking typst is available"
+          if ! command -v typst >/dev/null 2>&1; then
+            echo "FAIL: typst not found in PATH"
+            exit 1
+          fi
+          echo "PASS: typst is installed"
+          typst --version
