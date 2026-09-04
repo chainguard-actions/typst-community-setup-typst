@@ -1,0 +1,141 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - .gitattributes
+      - .gitignore
+      - "**.md"
+      - LICENSE
+  pull_request:
+    paths-ignore:
+      - .gitattributes
+      - .gitignore
+      - "**.md"
+      - LICENSE
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: action-dist
+          path: ./dist
+  test-basic:
+    runs-on: ${{ matrix.os }}
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: action-dist
+          path: ./dist
+      - uses: ./
+      - run: typst --version
+  test-executable-name:
+    runs-on: ${{ matrix.os }}
+    needs: [build, test-basic]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: action-dist
+          path: ./dist
+      - uses: ./
+        with:
+          cache-dependency-path: test/basic/requirements.typ
+          executable-name: typst-latest
+      - uses: ./
+        with:
+          typst-version: v0.13
+          cache-dependency-path: test/basic/requirements.typ
+          executable-name: typst-013
+      - run: typst-latest --version
+      - run: typst-latest compile test/basic/main.typ
+      - run: typst-013 --version
+      - run: typst-013 compile test/basic/main.typ
+  test-typst-versions:
+    runs-on: ${{ matrix.os }}
+    needs: [build, test-basic]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: action-dist
+          path: ./dist
+      - uses: ./
+        with:
+          typst-versions-file: test/typst-versions/config.json
+      - uses: ./
+        with:
+          typst-versions-file: test/typst-versions/config.hjson
+      - uses: ./
+        with:
+          typst-versions-file: test/typst-versions/config.yaml
+      - uses: ./
+        with:
+          typst-versions-file: test/typst-versions/config.toml
+      - uses: ./
+        with:
+          typst-versions-file: test/typst-versions/config.xml
+      - uses: ./
+        with:
+          typst-versions-file: test/typst-versions/config.ini
+      - uses: ./
+        with:
+          typst-versions-file: test/typst-versions/config.hcl
+      - run: typst-test-1 --version
+      - run: typst-test-2 --version
+      - run: typst-test-3 --version
+      - run: typst-test-4 --version
+      - run: typst-test-5 --version
+      - run: typst-test-6 --version
+      - run: typst-test-7 --version
+  test-zip-packages:
+    runs-on: ${{ matrix.os }}
+    needs: [build, test-basic]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: action-dist
+          path: ./dist
+      - uses: ./
+        with:
+          typst-version: v0.14
+          zip-packages-file: test/zip-packages/requirements.json
+          cache-local-packages: true
+      - run: typst --version
+      - run: typst compile test/zip-packages/main.typ

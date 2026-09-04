@@ -1,0 +1,26 @@
+name: Test zip-packages-file input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create a zip-packages JSON file
+        run: |
+          echo '{}' > /tmp/zip-packages.json
+      - id: action
+        uses: .
+        with:
+          typst-version: latest
+          zip-packages-file: /tmp/zip-packages.json
+      - name: Assert typst is installed
+        run: |
+          echo "Checking typst is available..."
+          if ! command -v typst &>/dev/null; then
+            echo "FAIL: typst not found in PATH"
+            exit 1
+          fi
+          VERSION=$(typst --version)
+          echo "typst version: $VERSION"
+          echo "PASS"

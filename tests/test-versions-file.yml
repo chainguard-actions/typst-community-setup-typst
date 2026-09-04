@@ -1,0 +1,48 @@
+name: Test versions file input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: setup-typst
+        uses: .
+        with:
+          typst-versions-file: >-
+            ${{ github.workspace }}/tests/fixtures/typst-versions.yaml
+          token: ${{ github.token }}
+      - name: Assert typst-file-v1 is on PATH
+        run: |
+          if ! command -v typst-file-v1 >/dev/null 2>&1; then
+            echo "FAIL: typst-file-v1 not found on PATH"
+            exit 1
+          fi
+          echo "PASS: typst-file-v1 found at $(command -v typst-file-v1)"
+      - name: Assert typst-file-v1 version is correct
+        run: |
+          VERSION=$(typst-file-v1 --version 2>&1)
+          echo "typst-file-v1 version output: $VERSION"
+          if echo "$VERSION" | grep -q "0.11.0"; then
+            echo "PASS: typst-file-v1 is version 0.11.0"
+          else
+            echo "FAIL: expected 0.11.0 but got: $VERSION"
+            exit 1
+          fi
+      - name: Assert typst-file-v2 is on PATH
+        run: |
+          if ! command -v typst-file-v2 >/dev/null 2>&1; then
+            echo "FAIL: typst-file-v2 not found on PATH"
+            exit 1
+          fi
+          echo "PASS: typst-file-v2 found at $(command -v typst-file-v2)"
+      - name: Assert typst-file-v2 version is correct
+        run: |
+          VERSION=$(typst-file-v2 --version 2>&1)
+          echo "typst-file-v2 version output: $VERSION"
+          if echo "$VERSION" | grep -q "0.12.0"; then
+            echo "PASS: typst-file-v2 is version 0.12.0"
+          else
+            echo "FAIL: expected 0.12.0 but got: $VERSION"
+            exit 1
+          fi

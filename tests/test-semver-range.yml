@@ -1,0 +1,39 @@
+name: Test semver range version specification
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: setup-typst
+        uses: .
+        with:
+          typst-version: ">=0.11.0 <0.12.0"
+          token: ${{ github.token }}
+      - name: Assert typst is on PATH
+        run: |
+          if ! command -v typst >/dev/null 2>&1; then
+            echo "FAIL: typst not found on PATH"
+            exit 1
+          fi
+          echo "PASS: typst found at $(command -v typst)"
+      - name: Assert typst version is within the requested range
+        run: |
+          VERSION_OUTPUT=$(typst --version 2>&1)
+          echo "typst version output: $VERSION_OUTPUT"
+          # Extract version number (e.g. "typst 0.11.1 (hash)" -> "0.11.1")
+          VERSION_NUM=$(echo "$VERSION_OUTPUT" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+          echo "Parsed version: $VERSION_NUM"
+          if [ -z "$VERSION_NUM" ]; then
+            echo "FAIL: could not parse version number from: $VERSION_OUTPUT"
+            exit 1
+          fi
+          MAJOR=$(echo "$VERSION_NUM" | cut -d. -f1)
+          MINOR=$(echo "$VERSION_NUM" | cut -d. -f2)
+          if [ "$MAJOR" -eq 0 ] && [ "$MINOR" -eq 11 ]; then
+            echo "PASS: version $VERSION_NUM is within range >=0.11.0 <0.12.0"
+          else
+            echo "FAIL: version $VERSION_NUM is NOT within range >=0.11.0 <0.12.0"
+            exit 1
+          fi
