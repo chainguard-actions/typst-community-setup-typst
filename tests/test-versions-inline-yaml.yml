@@ -1,0 +1,57 @@
+name: Test multiple versions via inline YAML input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Install xz-utils for tar extraction
+        run: |
+          if ! command -v xz >/dev/null 2>&1; then
+            apt-get update -qq && apt-get install -y -qq xz-utils
+          fi
+          echo "xz available: $(xz --version | head -1)"
+      - id: action
+        uses: .
+        with:
+          typst-versions-yaml: |
+            typst-a:
+              version: "0.11.0"
+            typst-b:
+              version: "0.12.0"
+          token: ${{ github.token }}
+      - name: Assert typst-a is on PATH
+        run: |
+          echo "Checking typst-a is available..."
+          if ! which typst-a; then
+            echo "FAIL: typst-a not found on PATH"
+            exit 1
+          fi
+          echo "PASS: typst-a found at $(which typst-a)"
+      - name: Assert typst-a version is correct
+        run: |
+          VERSION_OUTPUT=$(typst-a --version)
+          echo "typst-a version output: $VERSION_OUTPUT"
+          if ! echo "$VERSION_OUTPUT" | grep -q "0.11.0"; then
+            echo "FAIL: expected version 0.11.0 but got: $VERSION_OUTPUT"
+            exit 1
+          fi
+          echo "PASS: typst-a version 0.11.0 confirmed"
+      - name: Assert typst-b is on PATH
+        run: |
+          echo "Checking typst-b is available..."
+          if ! which typst-b; then
+            echo "FAIL: typst-b not found on PATH"
+            exit 1
+          fi
+          echo "PASS: typst-b found at $(which typst-b)"
+      - name: Assert typst-b version is correct
+        run: |
+          VERSION_OUTPUT=$(typst-b --version)
+          echo "typst-b version output: $VERSION_OUTPUT"
+          if ! echo "$VERSION_OUTPUT" | grep -q "0.12.0"; then
+            echo "FAIL: expected version 0.12.0 but got: $VERSION_OUTPUT"
+            exit 1
+          fi
+          echo "PASS: typst-b version 0.12.0 confirmed"

@@ -1,0 +1,57 @@
+name: Test multiple versions via JSON input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Install xz-utils for tar extraction
+        run: |
+          if ! command -v xz >/dev/null 2>&1; then
+            apt-get update -qq && apt-get install -y -qq xz-utils
+          fi
+          echo "xz available: $(xz --version | head -1)"
+      - id: action
+        uses: .
+        with:
+          typst-versions-json: |
+            {
+              "typst-0-11": { "version": "0.11.0" },
+              "typst-0-12": { "version": "0.12.0" }
+            }
+          token: ${{ github.token }}
+      - name: Assert typst-0-11 is on PATH
+        run: |
+          echo "Checking typst-0-11 is available..."
+          if ! which typst-0-11; then
+            echo "FAIL: typst-0-11 not found on PATH"
+            exit 1
+          fi
+          echo "PASS: typst-0-11 found at $(which typst-0-11)"
+      - name: Assert typst-0-11 version is correct
+        run: |
+          VERSION_OUTPUT=$(typst-0-11 --version)
+          echo "typst-0-11 version output: $VERSION_OUTPUT"
+          if ! echo "$VERSION_OUTPUT" | grep -q "0.11.0"; then
+            echo "FAIL: expected version 0.11.0 but got: $VERSION_OUTPUT"
+            exit 1
+          fi
+          echo "PASS: typst-0-11 version 0.11.0 confirmed"
+      - name: Assert typst-0-12 is on PATH
+        run: |
+          echo "Checking typst-0-12 is available..."
+          if ! which typst-0-12; then
+            echo "FAIL: typst-0-12 not found on PATH"
+            exit 1
+          fi
+          echo "PASS: typst-0-12 found at $(which typst-0-12)"
+      - name: Assert typst-0-12 version is correct
+        run: |
+          VERSION_OUTPUT=$(typst-0-12 --version)
+          echo "typst-0-12 version output: $VERSION_OUTPUT"
+          if ! echo "$VERSION_OUTPUT" | grep -q "0.12.0"; then
+            echo "FAIL: expected version 0.12.0 but got: $VERSION_OUTPUT"
+            exit 1
+          fi
+          echo "PASS: typst-0-12 version 0.12.0 confirmed"

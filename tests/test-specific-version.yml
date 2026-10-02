@@ -1,0 +1,36 @@
+name: Test specific typst version
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Install xz-utils for tar extraction
+        run: |
+          if ! command -v xz >/dev/null 2>&1; then
+            apt-get update -qq && apt-get install -y -qq xz-utils
+          fi
+          echo "xz available: $(xz --version | head -1)"
+      - id: action
+        uses: .
+        with:
+          typst-version: "0.11.0"
+          token: ${{ github.token }}
+      - name: Assert typst is on PATH
+        run: |
+          echo "Checking typst is available..."
+          if ! which typst; then
+            echo "FAIL: typst not found on PATH"
+            exit 1
+          fi
+          echo "PASS: typst found at $(which typst)"
+      - name: Assert typst version is correct
+        run: |
+          VERSION_OUTPUT=$(typst --version)
+          echo "typst version output: $VERSION_OUTPUT"
+          if ! echo "$VERSION_OUTPUT" | grep -q "0.11.0"; then
+            echo "FAIL: expected version 0.11.0 but got: $VERSION_OUTPUT"
+            exit 1
+          fi
+          echo "PASS: typst version 0.11.0 confirmed"
