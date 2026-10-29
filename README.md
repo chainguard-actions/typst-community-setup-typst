@@ -6,15 +6,15 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 
 ## Versions
 
-| Version | Tag | Upstream commit |
-|---------|-----|-----------------|
-| v4.2.0 | [`v4.2.0`](https://github.com/chainguard-actions/typst-community-setup-typst/tree/v4.2.0) | [`0215a55`](https://github.com/typst-community/setup-typst/commit/0215a551fa8714b290af7956b9973d010f1a5187) |
-| v5.0.0 | [`v5.0.0`](https://github.com/chainguard-actions/typst-community-setup-typst/tree/v5.0.0) | [`f3792ba`](https://github.com/typst-community/setup-typst/commit/f3792ba4fd5a663366a44b5a6559de6ecc91a520) |
-| v5.1.0 | [`v5.1.0`](https://github.com/chainguard-actions/typst-community-setup-typst/tree/v5.1.0) | [`63ac138`](https://github.com/typst-community/setup-typst/commit/63ac138db421d586de61f7f5ac3bcef6a2e6c78c) |
-| v5.2.0 | [`v5.2.0`](https://github.com/chainguard-actions/typst-community-setup-typst/tree/v5.2.0) | [`40d32bb`](https://github.com/typst-community/setup-typst/commit/40d32bb6ccb235bd7f5164cb47cfd40a5ea3a314) |
-| v5.3.0 | [`v5.3.0`](https://github.com/chainguard-actions/typst-community-setup-typst/tree/v5.3.0) | [`fee4b65`](https://github.com/typst-community/setup-typst/commit/fee4b65b091cc546f02ce3be15fad8760f38a108) |
-| v5.3.0b1 | [`v5.3.0b1`](https://github.com/chainguard-actions/typst-community-setup-typst/tree/v5.3.0b1) | [`9107b8d`](https://github.com/typst-community/setup-typst/commit/9107b8dd77d7a7fd6c5faebbb507cac28069042e) |
-| v5.3.0b2 | [`v5.3.0b2`](https://github.com/chainguard-actions/typst-community-setup-typst/tree/v5.3.0b2) | [`727aece`](https://github.com/typst-community/setup-typst/commit/727aeceb08573f1484fc2a486fd01c0df0a012a1) |
+| Version | Tag | Upstream commit | Hardening report |
+|---------|-----|-----------------|------------------|
+| v4.2.0 | [`v4.2.0`](https://github.com/chainguard-actions/typst-community-setup-typst/tree/v4.2.0) | [`0215a55`](https://github.com/typst-community/setup-typst/commit/0215a551fa8714b290af7956b9973d010f1a5187) | [`HARDENING.md`](https://github.com/chainguard-actions/typst-community-setup-typst/blob/v4.2.0/HARDENING.md) |
+| v5.0.0 | [`v5.0.0`](https://github.com/chainguard-actions/typst-community-setup-typst/tree/v5.0.0) | [`f3792ba`](https://github.com/typst-community/setup-typst/commit/f3792ba4fd5a663366a44b5a6559de6ecc91a520) | [`HARDENING.md`](https://github.com/chainguard-actions/typst-community-setup-typst/blob/v5.0.0/HARDENING.md) |
+| v5.1.0 | [`v5.1.0`](https://github.com/chainguard-actions/typst-community-setup-typst/tree/v5.1.0) | [`63ac138`](https://github.com/typst-community/setup-typst/commit/63ac138db421d586de61f7f5ac3bcef6a2e6c78c) | [`HARDENING.md`](https://github.com/chainguard-actions/typst-community-setup-typst/blob/v5.1.0/HARDENING.md) |
+| v5.2.0 | [`v5.2.0`](https://github.com/chainguard-actions/typst-community-setup-typst/tree/v5.2.0) | [`40d32bb`](https://github.com/typst-community/setup-typst/commit/40d32bb6ccb235bd7f5164cb47cfd40a5ea3a314) | [`HARDENING.md`](https://github.com/chainguard-actions/typst-community-setup-typst/blob/v5.2.0/HARDENING.md) |
+| v5.3.0 | [`v5.3.0`](https://github.com/chainguard-actions/typst-community-setup-typst/tree/v5.3.0) | [`fee4b65`](https://github.com/typst-community/setup-typst/commit/fee4b65b091cc546f02ce3be15fad8760f38a108) | [`HARDENING.md`](https://github.com/chainguard-actions/typst-community-setup-typst/blob/v5.3.0/HARDENING.md) |
+| v5.3.0b1 | [`v5.3.0b1`](https://github.com/chainguard-actions/typst-community-setup-typst/tree/v5.3.0b1) | [`9107b8d`](https://github.com/typst-community/setup-typst/commit/9107b8dd77d7a7fd6c5faebbb507cac28069042e) | [`HARDENING.md`](https://github.com/chainguard-actions/typst-community-setup-typst/blob/v5.3.0b1/HARDENING.md) |
+| v5.3.0b2 | [`v5.3.0b2`](https://github.com/chainguard-actions/typst-community-setup-typst/tree/v5.3.0b2) | [`727aece`](https://github.com/typst-community/setup-typst/commit/727aeceb08573f1484fc2a486fd01c0df0a012a1) | [`HARDENING.md`](https://github.com/chainguard-actions/typst-community-setup-typst/blob/v5.3.0b2/HARDENING.md) |
 
 ## Privacy
 
