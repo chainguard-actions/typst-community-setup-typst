@@ -1,0 +1,25 @@
+name: Test multiple versions via JSON
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          typst-versions-json: |
+            {
+              "typst-011": {"version": "0.11.1"},
+              "typst-012": {"version": "0.12.0"}
+            }
+      - name: Assert both executables installed with correct versions
+        run: |
+          A="$(typst-011 --version)"
+          B="$(typst-012 --version)"
+          echo "typst-011: $A"
+          echo "typst-012: $B"
+          echo "$A" | grep -q '0\.11\.1' || { echo "FAIL: typst-011 wrong version"; exit 1; }
+          echo "$B" | grep -q '0\.12\.0' || { echo "FAIL: typst-012 wrong version"; exit 1; }
+          echo "PASS"

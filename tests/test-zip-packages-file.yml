@@ -1,0 +1,31 @@
+name: Test zip-packages-file
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create requirements file
+        run: |
+          mkdir -p typst-fixture
+          cat > typst-fixture/requirements.yaml <<'EOF'
+          local:
+            algorithmic:
+              "1.0.0": https://github.com/typst-community/typst-algorithmic/archive/refs/tags/v1.0.0.zip
+          EOF
+          cat typst-fixture/requirements.yaml
+      - id: action
+        uses: .
+        with:
+          zip-packages-file: typst-fixture/requirements.yaml
+          cache-local-packages: true
+      - name: Assert local package installed
+        run: |
+          PKG_ROOT="${XDG_CACHE_HOME:-$HOME/.cache}/typst/packages"
+          ls -R "$PKG_ROOT/local" 2>/dev/null | head -30 || true
+          if [ ! -f "$PKG_ROOT/local/algorithmic/1.0.0/typst.toml" ]; then
+            echo "FAIL: @local/algorithmic:1.0.0 not installed"
+            exit 1
+          fi
+          echo "PASS"

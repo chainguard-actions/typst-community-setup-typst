@@ -1,0 +1,24 @@
+name: Test multiple versions via HJSON
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          typst-versions-hjson: |
+            {
+              # comment allowed in HJSON
+              typst-hjson-013: {
+                version: v0.13
+              }
+            }
+      - name: Assert executable installed
+        run: |
+          B="$(typst-hjson-013 --version)"
+          echo "typst-hjson-013: $B"
+          echo "$B" | grep -q '0\.13\.' || { echo "FAIL: expected 0.13.x"; exit 1; }
+          echo "PASS"

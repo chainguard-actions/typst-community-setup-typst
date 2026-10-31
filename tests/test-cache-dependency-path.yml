@@ -1,0 +1,27 @@
+name: Test cache-dependency-path downloads preview packages
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create requirements.typ
+        run: |
+          mkdir -p typst-fixture
+          printf '#import "@preview/example:0.1.0": *\n\nHello\n' > typst-fixture/requirements.typ
+          cat typst-fixture/requirements.typ
+      - id: action
+        uses: .
+        with:
+          cache-dependency-path: typst-fixture/requirements.typ
+      - name: Assert preview package available
+        run: |
+          PKG_ROOT="${XDG_CACHE_HOME:-$HOME/.cache}/typst/packages"
+          echo "package root: $PKG_ROOT"
+          ls -R "$PKG_ROOT/preview" 2>/dev/null | head -50 || true
+          if [ ! -f "$PKG_ROOT/preview/example/0.1.0/typst.toml" ]; then
+            echo "FAIL: @preview/example:0.1.0 not found in package cache"
+            exit 1
+          fi
+          echo "PASS"

@@ -1,0 +1,23 @@
+name: Test basic latest install
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+      - name: Assert typst is on PATH and runs
+        run: |
+          if ! command -v typst >/dev/null 2>&1; then
+            echo "FAIL: typst not found on PATH"
+            exit 1
+          fi
+          OUT="$(typst --version)"
+          echo "actual: $OUT"
+          if ! echo "$OUT" | grep -qiE '^typst [0-9]+\.[0-9]+'; then
+            echo "FAIL: unexpected version output"
+            exit 1
+          fi
+          echo "PASS"

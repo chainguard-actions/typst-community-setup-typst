@@ -1,0 +1,32 @@
+name: Test multiple versions via typst-versions-file
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create versions config file
+        run: |
+          mkdir -p typst-fixture
+          cat > typst-fixture/versions.toml <<'EOF'
+          ["typst-file-latest"]
+          version = "latest"
+
+          ["typst-file-013"]
+          version = "v0.13"
+          EOF
+          cat typst-fixture/versions.toml
+      - id: action
+        uses: .
+        with:
+          typst-versions-file: typst-fixture/versions.toml
+      - name: Assert executables installed
+        run: |
+          A="$(typst-file-latest --version)"
+          B="$(typst-file-013 --version)"
+          echo "typst-file-latest: $A"
+          echo "typst-file-013: $B"
+          echo "$A" | grep -qiE 'typst [0-9]+\.[0-9]+' || { echo "FAIL: typst-file-latest bad output"; exit 1; }
+          echo "$B" | grep -q '0\.13\.' || { echo "FAIL: typst-file-013 expected 0.13.x"; exit 1; }
+          echo "PASS"
