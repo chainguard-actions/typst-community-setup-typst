@@ -15,6 +15,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 | v5.3.0 | [`v5.3.0`](https://github.com/chainguard-actions/typst-community-setup-typst/tree/v5.3.0) | [`fee4b65`](https://github.com/typst-community/setup-typst/commit/fee4b65b091cc546f02ce3be15fad8760f38a108) | [`HARDENING.md`](https://github.com/chainguard-actions/typst-community-setup-typst/blob/v5.3.0/HARDENING.md) |
 | v5.3.0b1 | [`v5.3.0b1`](https://github.com/chainguard-actions/typst-community-setup-typst/tree/v5.3.0b1) | [`9107b8d`](https://github.com/typst-community/setup-typst/commit/9107b8dd77d7a7fd6c5faebbb507cac28069042e) | [`HARDENING.md`](https://github.com/chainguard-actions/typst-community-setup-typst/blob/v5.3.0b1/HARDENING.md) |
 | v5.3.0b2 | [`v5.3.0b2`](https://github.com/chainguard-actions/typst-community-setup-typst/tree/v5.3.0b2) | [`727aece`](https://github.com/typst-community/setup-typst/commit/727aeceb08573f1484fc2a486fd01c0df0a012a1) | [`HARDENING.md`](https://github.com/chainguard-actions/typst-community-setup-typst/blob/v5.3.0b2/HARDENING.md) |
+| v5.3.1 | [`v5.3.1`](https://github.com/chainguard-actions/typst-community-setup-typst/tree/v5.3.1) | [`6a2cfaf`](https://github.com/typst-community/setup-typst/commit/6a2cfaf0b28d636b00148f965e315bae81079aaa) | [`HARDENING.md`](https://github.com/chainguard-actions/typst-community-setup-typst/blob/v5.3.1/HARDENING.md) |
 
 ## Privacy
 
