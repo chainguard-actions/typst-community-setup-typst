@@ -1,0 +1,25 @@
+name: Test zip-packages-yaml installs local package with version override
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          typst-version: 0.12.0
+          zip-packages-yaml: |
+            local:
+              algorithmic:
+                "2.0.0": https://github.com/typst-community/typst-algorithmic/archive/refs/tags/v1.0.0.zip
+      - name: Assert package extracted
+        run: |
+          BASE="${XDG_CACHE_HOME:-$HOME/.cache}/typst/packages"
+          ls -R "$BASE" | head -50 || true
+          if [ ! -f "$BASE/local/algorithmic/2.0.0/typst.toml" ]; then
+            echo "FAIL: local algorithmic 2.0.0 not found"
+            exit 1
+          fi
+          echo "PASS"

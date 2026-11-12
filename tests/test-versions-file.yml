@@ -1,0 +1,36 @@
+name: Test multiple versions via typst-versions-file
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create versions config file
+        run: |
+          cat > "$RUNNER_TEMP/typst-versions.yaml" <<'EOF'
+          typst-file-a:
+            version: "0.11.1"
+          typst-file-b:
+            version: "0.12.0"
+          EOF
+          cat "$RUNNER_TEMP/typst-versions.yaml"
+      - id: action
+        uses: .
+        with:
+          typst-versions-file: ${{ runner.temp }}/typst-versions.yaml
+      - name: Assert executables installed with correct versions
+        run: |
+          A="$(typst-file-a --version)"
+          B="$(typst-file-b --version)"
+          echo "a: $A"
+          echo "b: $B"
+          if ! echo "$A" | grep -qE '^typst 0\.11\.1( |$)'; then
+            echo "FAIL: typst-file-a should be 0.11.1"
+            exit 1
+          fi
+          if ! echo "$B" | grep -qE '^typst 0\.12\.0( |$)'; then
+            echo "FAIL: typst-file-b should be 0.12.0"
+            exit 1
+          fi
+          echo "PASS"

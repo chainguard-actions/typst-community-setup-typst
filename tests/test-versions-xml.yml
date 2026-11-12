@@ -1,0 +1,24 @@
+name: Test multiple versions via typst-versions-xml
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          typst-versions-xml: |
+            <typst-xml>
+              <version>0.12.0</version>
+            </typst-xml>
+      - name: Assert executable installed with correct version
+        run: |
+          V="$(typst-xml --version)"
+          echo "version: $V"
+          if ! echo "$V" | grep -qE '^typst 0\.12\.0( |$)'; then
+            echo "FAIL: typst-xml should be 0.12.0"
+            exit 1
+          fi
+          echo "PASS"
