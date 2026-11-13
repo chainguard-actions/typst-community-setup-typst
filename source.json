@@ -4,8 +4,13 @@
   "version": "v5.3.0",
   "commit_sha": "fee4b65b091cc546f02ce3be15fad8760f38a108",
   "url": "https://github.com/typst-community/setup-typst",
-  "policy_sha": "d636be7e43ef829af6e853da6b3c7566db9f72fe",
+  "policy_sha": "374911c4be584df24e6da57af2d990570ef0f859",
   "test_policy_sha": "843adf9e4b8f85d0c08b27b9d0b09dd094b54702",
   "test_agent_version": "2",
-  "harden_agent_version": "2"
+  "harden_agent_version": "2",
+  "dist_artifact": {
+    "gcs_uri": "gs://patch-actions-node-artifacts/dist-artifacts/typst-community/setup-typst/v5.3.0/sha256-77329e90ea219a6258b927ac5e47802cb367c8c463c89d77c604b3139ca59e0f.tar.gz",
+    "sha256": "77329e90ea219a6258b927ac5e47802cb367c8c463c89d77c604b3139ca59e0f",
+    "size_bytes": 768322
+  }
 }
